@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Leaf & Lumen Books</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">LL</div>
+          <div>
+            <div class="brand-title">Leaf & Lumen</div>
+            <div class="brand-subtitle">Books curated for calm minds</div>
+          </div>
+        </div>
+        <nav class="topbar-nav">
+          <button class="chip is-active" data-view="customer">Shop</button>
+          <button class="chip" data-view="admin">Admin</button>
+          <button class="chip" id="open-auth">Account</button>
+          <button class="primary" id="open-cart">Cart <span id="cart-count">0</span></button>
+        </nav>
+      </header>
+
+      <main class="main">
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Bookshop minimal</p>
+            <h1>Find the quiet book that fits today.</h1>
+            <p class="lead">
+              Search by title, author, or mood. Build a warm little cart and check out in a moment.
+            </p>
+            <div class="hero-actions">
+              <button class="primary" id="shop-now">Shop now</button>
+              <button class="ghost" id="view-orders">Orders history</button>
+            </div>
+          </div>
+          <div class="hero-card">
+            <div class="hero-card-inner">
+              <div class="hero-kicker">Curator picks</div>
+              <div class="hero-book">
+                <div class="hero-book-cover" id="hero-cover"></div>
+                <div>
+                  <div class="hero-book-title">Velvet Autumn</div>
+                  <div class="hero-book-author">By Mira Solis</div>
+                  <div class="hero-book-meta">Fiction · 4.8 rating</div>
+                </div>
+              </div>
+              <div class="hero-stats">
+                <div>
+                  <div class="stat-value">120+</div>
+                  <div class="stat-label">Titles in stock</div>
+                </div>
+                <div>
+                  <div class="stat-value">24h</div>
+                  <div class="stat-label">Fast dispatch</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content">
+          <aside class="sidebar">
+            <div class="panel">
+              <h3>Search</h3>
+              <input type="text" id="search-input" placeholder="Title, author, or ID" />
+              <div class="tag-list" id="category-tags"></div>
+            </div>
+            <div class="panel">
+              <h3>Highlights</h3>
+              <div class="highlight">
+                <p class="highlight-title">Weekend bundle</p>
+                <p>Buy 2 classics, get 15% off.</p>
+                <button class="ghost">Browse classics</button>
+              </div>
+              <div class="highlight">
+                <p class="highlight-title">New arrivals</p>
+                <p>Fresh stories every Tuesday.</p>
+                <button class="ghost">See new drops</button>
+              </div>
+            </div>
+          </aside>
+
+          <section class="catalog">
+            <div class="catalog-header">
+              <div>
+                <h2>Discover</h2>
+                <p>Hand-picked for your next quiet hour.</p>
+              </div>
+              <div class="catalog-controls">
+                <label for="sort">Sort</label>
+                <select id="sort">
+                  <option value="featured">Featured</option>
+                  <option value="title">Title</option>
+                  <option value="author">Author</option>
+                  <option value="price">Price</option>
+                </select>
+              </div>
+            </div>
+            <div class="book-grid" id="book-grid"></div>
+          </section>
+        </section>
+
+        <section class="admin" id="admin-view">
+          <div class="admin-header">
+            <div>
+              <p class="eyebrow">Admin workspace</p>
+              <h2>Manage inventory</h2>
+            </div>
+            <button class="primary" id="add-book">Add new book</button>
+          </div>
+          <div class="admin-table" id="admin-table"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="drawer" id="cart-drawer">
+      <div class="drawer-header">
+        <h3>Your cart</h3>
+        <button class="ghost" id="close-cart">Close</button>
+      </div>
+      <div class="drawer-body" id="cart-items"></div>
+      <div class="drawer-footer">
+        <div class="totals">
+          <span>Total</span>
+          <strong id="cart-total">$0.00</strong>
+        </div>
+        <button class="primary" id="checkout">Place order</button>
+      </div>
+    </div>
+
+    <div class="modal" id="auth-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Welcome back</h3>
+          <button class="ghost" id="close-auth">Close</button>
+        </div>
+        <div class="tabs">
+          <button class="tab is-active" data-tab="login">Login</button>
+          <button class="tab" data-tab="register">Register</button>
+        </div>
+        <form class="form" id="login-form">
+          <label>Email</label>
+          <input type="email" placeholder="name@email.com" required />
+          <label>Password</label>
+          <input type="password" placeholder="••••••" required />
+          <button class="primary" type="submit">Login</button>
+        </form>
+        <form class="form is-hidden" id="register-form">
+          <label>Name</label>
+          <input type="text" placeholder="Your name" required />
+          <label>Email</label>
+          <input type="email" placeholder="name@email.com" required />
+          <label>Password</label>
+          <input type="password" placeholder="Create a password" required />
+          <label>Address</label>
+          <input type="text" placeholder="Street, City" required />
+          <button class="primary" type="submit">Create account</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="orders-modal">
+      <div class="modal-content modal-wide">
+        <div class="modal-header">
+          <h3>Orders history</h3>
+          <button class="ghost" id="close-orders">Close</button>
+        </div>
+        <div class="orders-list" id="orders-list"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="add-book-modal">
+      <div class="modal-content modal-wide">
+        <div class="modal-header">
+          <h3>Add new book</h3>
+          <button class="ghost" id="close-add-book">Close</button>
+        </div>
+        <form class="form admin-form" id="add-book-form">
+          <div class="form-row">
+            <div>
+              <label>Title</label>
+              <input type="text" name="title" placeholder="Book title" required />
+            </div>
+            <div>
+              <label>Author</label>
+              <input type="text" name="author" placeholder="Author name" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Category</label>
+              <input type="text" name="category" placeholder="Fiction, Memoir" required />
+            </div>
+            <div>
+              <label>Price</label>
+              <input type="number" name="price" min="0" step="0.01" placeholder="19.99" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Stock</label>
+              <input type="number" name="stock" min="0" step="1" placeholder="10" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Cover image URL</label>
+              <input type="url" name="coverUrl" placeholder="https://..." />
+            </div>
+            <div>
+              <label>Upload cover</label>
+              <input type="file" name="coverFile" accept="image/*" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="ghost" type="button" id="cancel-add-book">Cancel</button>
+            <button class="primary" type="submit">Add book</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>

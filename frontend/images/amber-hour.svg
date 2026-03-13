@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="520" viewBox="0 0 360 520">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f1d9a5" />
+      <stop offset="1" stop-color="#c48a3a" />
+    </linearGradient>
+  </defs>
+  <rect width="360" height="520" rx="28" fill="url(#bg)" />
+  <rect x="50" y="110" width="260" height="6" fill="#fff3d8" />
+  <rect x="50" y="130" width="200" height="6" fill="#f3d9a5" />
+  <text x="48" y="300" font-family="Georgia, serif" font-size="30" fill="#4a3217">The Amber Hour</text>
+  <text x="48" y="340" font-family="Arial, sans-serif" font-size="16" fill="#6b6257">L. Ikari</text>
+</svg>

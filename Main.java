@@ -25,8 +25,7 @@ import BooksApplication.adt.QueueADT;
 
 public class Main {
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        Console console = System.console(); // Get the system console
+        ConsoleUI ui = new ConsoleUI();
 
         BookBuddy bookBuddy = new BookBuddy();
         CartItemBuddy cartItemBuddy = new CartItemBuddy();
@@ -41,99 +40,72 @@ public class Main {
         ArrayListADT<User> usersDatabase = new ArrayListADT<>();
 
         while (running) {
-            System.out.println("----------------------");
-            System.out.println("Book Store Application");
-            System.out.println("----------------------");
+            ui.printHeader("Book Store Application");
 
             if (loggedInUser == null) {
                 System.out.println("1. Register");
                 System.out.println("2. Login");
                 System.out.println("3. Exit");
                 System.out.println("----------------------");
-                System.out.print("Enter your choice: ");
-                int choice = Integer.parseInt(scanner.nextLine());
+                
+                int choice = ui.promptInt("Enter your choice:");
 
                 switch (choice) {
                     case 1:
                         // Register
-                        System.out.println("1. Register as Customer");
+                        System.out.println("\n1. Register as Customer");
                         System.out.println("2. Register as Admin");
-                        System.out.print("Enter your choice: ");
-                        int registerChoice = Integer.parseInt(scanner.nextLine());
+                        int registerChoice = ui.promptInt("Enter your choice:");
 
-                        System.out.print("Enter your name: ");
-                        String name = scanner.nextLine();
-                        System.out.print("Enter your email: ");
-                        String email = scanner.nextLine();
-
-                        String password;
-                        if (console != null) {
-                            // Use Console.readPassword() to read the password without echoing
-                            char[] passwordArray = console.readPassword("Enter your password: ");
-                            password = new String(passwordArray);
-                        } else {
-                            // Fallback to Scanner if Console is not available (e.g., in some IDEs)
-                            System.out.print("Enter your password: ");
-                            password = scanner.nextLine();
-                        }
+                        String name = ui.promptString("Enter your name:");
+                        String email = ui.promptString("Enter your email:");
+                        String password = ui.promptPassword("Enter your password:");
 
                         if (registerChoice == 1) {
-                            System.out.print("Enter your address: ");
-                            String address = scanner.nextLine();
+                            String address = ui.promptString("Enter your address:");
                             Customer customer = customerBuddy.createCustomer(name, email, password, address);
                             customerBuddy.registerCustomer(customer);
                             usersDatabase.add(customer); // Save to database
-                            System.out.println("Customer registered successfully!");
+                            ui.printSuccess("Customer registered successfully!");
                         } else if (registerChoice == 2) {
-                            System.out.print("Enter the admin key: ");
-                            String adminKey = scanner.nextLine();
+                            String adminKey = ui.promptPassword("Enter the admin key:");
                             if (adminKey.equals("abc")) {
                                 Admin admin = adminBuddy.createAdmin(name, email, password);
                                 adminBuddy.registerAdmin(admin);
                                 usersDatabase.add(admin); // Save to database
-                                System.out.println("Admin registered successfully!");
+                                ui.printSuccess("Admin registered successfully!");
                             } else {
-                                System.out.println("Invalid admin key. Registration as Admin failed.");
+                                ui.printError("Invalid admin key. Registration as Admin failed.");
                             }
                         } else {
-                            System.out.println("Invalid choice.");
+                            ui.printError("Invalid choice.");
                         }
+                        ui.waitForEnter();
                         break;
 
                     case 2:
                         // Login
                         System.out.println("1. Login as Customer");
                         System.out.println("2. Login as Admin");
-                        System.out.print("Enter your choice: ");
-                        int loginChoice = Integer.parseInt(scanner.nextLine());
+                        int loginChoice = ui.promptInt("Enter your choice:");
 
-                        System.out.print("Enter your email: ");
-                        String loginEmail = scanner.nextLine();
-
-                        String loginPassword;
-                        if (console != null) {
-                            // Use Console.readPassword() to read the password without echoing
-                            char[] passwordArray = console.readPassword("Enter your password: ");
-                            loginPassword = new String(passwordArray);
-                        } else {
-                            // Fallback to Scanner if Console is not available (e.g., in some IDEs)
-                            System.out.print("Enter your password: ");
-                            loginPassword = scanner.nextLine();
-                        }
+                        String loginEmail = ui.promptString("Enter your email:");
+                        String loginPassword = ui.promptPassword("Enter your password:");
 
                         if (loginChoice == 1) {
                             loggedInUser = customerBuddy.loginCustomer(loginEmail, loginPassword);
                         } else if (loginChoice == 2) {
                             loggedInUser = adminBuddy.loginAdmin(loginEmail, loginPassword);
                         } else {
-                            System.out.println("Invalid choice.");
+                            ui.printError("Invalid choice.");
                         }
 
                         if (loggedInUser != null) {
-                            System.out.println("Login successful! Welcome, " + loggedInUser.getName());
+                            ui.printSuccess("Login successful! Welcome, " + loggedInUser.getName());
                         } else {
-                            System.out.println("Invalid email or password.");
+                            ui.printError("Invalid email or password.");
                         }
+                        ui.waitForEnter();
                         break;
 
                     case 3:
@@ -142,7 +114,8 @@ public class Main {
                         break;
 
                     default:
-                        System.out.println("Invalid choice. Please enter your choice again!");
+                        ui.printError("Invalid choice. Please enter your choice again!");
+                        ui.waitForEnter();
                         break;
                 }
             } else {
@@ -158,16 +131,12 @@ public class Main {
                         System.out.println("6. Search book history");
                         System.out.println("7. Logout");
                         System.out.println("----------------------");
-                        System.out.print("Enter your choice: ");
-                        try {
-                            choice = Integer.parseInt(scanner.nextLine());
-                            if (choice >= 1 && choice <= 7) {
-                                break;
-                            } else {
-                                System.out.println("Invalid choice. Please enter a number between 1 and 7.");
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input. Please enter a number between 1 and 7.");
+                        
+                        choice = ui.promptInt("Enter your choice:");
+                        if (choice >= 1 && choice <= 7) {
+                            break;
+                        } else {
+                            ui.printError("Invalid choice. Please enter a number between 1 and 7.");
                         }
                     }
 
@@ -175,21 +144,14 @@ public class Main {
                         case 1:
                             // Display all books
                             bookBuddy.displayBooks();
+                            ui.waitForEnter();
                             break;
 
                         case 2:
                             // Add book to cart
                             System.out.println("----------------------");
-                            int bookIdToAdd = 0;
-                            while (true) {
-                                try {
-                                    System.out.print("Enter the book ID to add to cart: ");
-                                    bookIdToAdd = Integer.parseInt(scanner.nextLine());
-                                    break;
-                                } catch (NumberFormatException e) {
-                                    System.out.println("Invalid input. Please enter a valid book ID.");
-                                }
-                            }
+                            int bookIdToAdd = ui.promptInt("Enter the book ID to add to cart:");
+                            
                             Book book = bookBuddy.getBookById(bookIdToAdd); // Assume this method retrieves the book by
                                                                             // ID
                             if (book != null) {
@@ -197,43 +159,39 @@ public class Main {
                                 int availableQuantity = book.getStockQuantity() - currentQuantityInCart;
 
                                 if (availableQuantity <= 0) {
-                                    System.out.println("This book is out of stock.");
+                                    ui.printError("This book is out of stock.");
                                 } else {
-                                    System.out.print("Enter the quantity to add to cart (available: "
-                                            + availableQuantity + "): ");
                                     int quantity = 0;
                                     boolean validQuantity = false;
 
                                     while (!validQuantity) {
-                                        try {
-                                            quantity = Integer.parseInt(scanner.nextLine());
-                                            if (quantity > 0 && quantity <= availableQuantity) {
-                                                validQuantity = true;
-                                            } else {
-                                                System.out.println(
-                                                        "Invalid quantity. Please enter a quantity between 1 and "
-                                                                + availableQuantity + ".");
-                                            }
-                                        } catch (NumberFormatException e) {
-                                            System.out.println("Invalid input. Please enter a valid quantity.");
+                                        quantity = ui.promptInt("Enter the quantity to add to cart (available: "
+                                                + availableQuantity + "):");
+                                        if (quantity > 0 && quantity <= availableQuantity) {
+                                            validQuantity = true;
+                                        } else {
+                                            ui.printError(
+                                                    "Invalid quantity. Please enter a quantity between 1 and "
+                                                            + availableQuantity + ".");
                                         }
                                     }
                                     cartItemBuddy.addToCart(book, quantity); // Add to cart with specified quantity
-                                    System.out.println("Book(s) added to cart!");
+                                    ui.printSuccess("Book(s) added to cart!");
                                 }
                             } else {
-                                System.out.println("No book found with ID: " + bookIdToAdd);
+                                ui.printError("No book found with ID: " + bookIdToAdd);
                             }
+                            ui.waitForEnter();
                             break;
 
                         case 3:
                             // Search book
                             System.out.println("----------------------");
-                            System.out.print("Enter the ID, title or author of the book: ");
-                            String searchQuery = scanner.nextLine();
+                            String searchQuery = ui.promptString("Enter the ID, title or author of the book:");
                             searchHistory.push(searchQuery); // Save search query to history
                             bookBuddy.searchBook(searchQuery); // Assume searchBook handles searching by ID, title, or
                                                                // author
+                            ui.waitForEnter();
                             break;
 
                         case 4:
@@ -247,15 +205,13 @@ public class Main {
                             System.out.println("4. Change quantity");
 
                             System.out.println("----------------------");
-                            System.out.print("Enter your choice: ");
-                            int choiceCart = Integer.parseInt(scanner.nextLine());
+                            int choiceCart = ui.promptInt("Enter your choice:");
 
                             switch (choiceCart) {
                                 case 1:
                                     // Place Order
                                     if (cartItemBuddy.isEmpty()) {
-                                        System.out.println(
-                                                "Your cart is empty. Add some books to the cart before checking out.");
+                                        ui.printWarning("Your cart is empty. Add some books to the cart before checking out.");
                                     } else {
                                         Customer customer = (Customer) loggedInUser;
                                         ArrayListADT<CartItem> booksInCart = new ArrayListADT<>();
@@ -274,12 +230,12 @@ public class Main {
                                                     bookToBuy.getStockQuantity() - cartItem.getQuantity());
                                         }
 
-                                        System.out.println("----------------------");
-                                        System.out.println("Order placed successfully!");
-                                        System.out.println(order);
-
-                                        // Clear the cart after Place Order
+                                        ui.printSuccess("Order placed successfully!");
                                         cartItemBuddy.clearCart();
+                                        System.out.println(order);
+                                        cartItemBuddy.clearCart();
+                                        ui.printSuccess("Order placed successfully!");
+                                        ui.waitForEnter();
                                     }
                                     break;
 
@@ -289,59 +245,50 @@ public class Main {
 
                                 case 3:
                                     // Remove book from cart
-                                    cartItemBuddy.removeBookFromCart(scanner);
+                                    cartItemBuddy.removeBookFromCart(ui.getScanner());
+                                    ui.waitForEnter();
                                     break;
 
                                 case 4:
                                     // Change quantity
                                     System.out.println("----------------------");
-                                    System.out.print("Enter the book ID to change quantity or 'n' to cancel: ");
-                                    String inputCart2 = scanner.nextLine();
+                                    String inputCart2 = ui.promptString("Enter the book ID to change quantity or 'n' to cancel:");
                                     if (!inputCart2.equalsIgnoreCase("n")) {
                                         try {
                                             int bookId = Integer.parseInt(inputCart2);
                                             CartItem cartItem = cartItemBuddy.getCartItemById(bookId);
                                             if (cartItem != null) {
-                                                Book bookQuantityChange = bookBuddy.getBookById(bookId); // Assume this
-                                                                                                         // method
-                                                                                                         // retrieves
-                                                                                                         // the book by
-                                                                                                         // ID
+                                                Book bookQuantityChange = bookBuddy.getBookById(bookId); 
                                                 if (bookQuantityChange != null) {
-                                                    System.out.print("Enter the new quantity (available: "
-                                                            + bookQuantityChange.getStockQuantity() + "): ");
                                                     int newQuantity = 0;
                                                     boolean validQuantity = false;
 
                                                     while (!validQuantity) {
-                                                        try {
-                                                            newQuantity = Integer.parseInt(scanner.nextLine());
-                                                            if (newQuantity > 0 && newQuantity <= bookQuantityChange
-                                                                    .getStockQuantity()) {
-                                                                validQuantity = true;
-                                                            } else {
-                                                                System.out.println(
-                                                                        "Invalid quantity. Please enter a quantity between 1 and "
-                                                                                + bookQuantityChange.getStockQuantity()
-                                                                                + ".");
-                                                            }
-                                                        } catch (NumberFormatException e) {
-                                                            System.out.println(
-                                                                    "Invalid input. Please enter a valid quantity.");
+                                                        newQuantity = ui.promptInt("Enter the new quantity (available: "
+                                                                + bookQuantityChange.getStockQuantity() + "):");
+                                                        if (newQuantity > 0 && newQuantity <= bookQuantityChange
+                                                                .getStockQuantity()) {
+                                                            validQuantity = true;
+                                                        } else {
+                                                            ui.printError(
+                                                                    "Invalid quantity. Please enter a quantity between 1 and "
+                                                                            + bookQuantityChange.getStockQuantity()
+                                                                            + ".");
                                                         }
                                                     }
                                                     cartItem.setQuantity(newQuantity);
-                                                    System.out.println("Quantity updated successfully!");
+                                                    ui.printSuccess("Quantity updated successfully!");
                                                 } else {
-                                                    System.out.println("No book found with ID: " + bookId);
+                                                    ui.printError("No book found with ID: " + bookId);
                                                 }
                                             } else {
-                                                System.out.println("No book found with ID: " + bookId);
+                                                ui.printError("No book found with ID: " + bookId);
                                             }
                                         } catch (NumberFormatException e) {
-                                            System.out.println("Invalid input. Please enter a valid book ID.");
+                                            ui.printError("Invalid input. Please enter a valid book ID.");
                                         }
                                     }
+                                    ui.waitForEnter();
                                     break;
                             }
                             break;
@@ -351,28 +298,32 @@ public class Main {
                             orderBuddy.viewOrdersHistory(loggedInUser);
 
                             // Search Orders as customer
-                            orderBuddy.searchOrdersAsCustomer(loggedInUser, scanner);
+                            orderBuddy.searchOrdersAsCustomer(loggedInUser, ui.getScanner());
+                            ui.waitForEnter();
                             break;
 
                         case 6:
                             // Search book history
                             System.out.println("----------------------");
-                            System.out.println("Search History:");
+                            System.out.println(ui.CYAN + ui.BOLD + "Search History:" + ui.RESET);
                             if (searchHistory.isEmpty()) {
-                                System.out.println("No search history found.");
+                                ui.printWarning("No search history found.");
                             } else {
                                 System.out.println(searchHistory.toString());
                             }
+                            ui.waitForEnter();
                             break;
 
                         case 7:
                             // Logout
                             loggedInUser = null;
-                            System.out.println("Logged out successfully.");
+                            ui.printSuccess("Logged out successfully.");
+                            ui.waitForEnter();
                             break;
 
                         default:
-                            System.out.println("Invalid choice. Please enter your choice again!");
+                            ui.printError("Invalid choice. Please enter your choice again!");
+                            ui.waitForEnter();
                             break;
                     }
                 } else if (loggedInUser instanceof Admin) {
@@ -387,15 +338,11 @@ public class Main {
 
                     int choice = 0;
                     while (true) {
-                        try {
-                            System.out.print("Enter your choice: ");
-                            choice = Integer.parseInt(scanner.nextLine());
-                            if (choice < 1 || choice > 6) {
-                                throw new NumberFormatException();
-                            }
+                        choice = ui.promptInt("Enter your choice:");
+                        if (choice >= 1 && choice <= 6) {
                             break;
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid choice. Please enter a number between 1 and 6.");
+                        } else {
+                            ui.printError("Invalid choice. Please enter a number between 1 and 6.");
                         }
                     }
 
@@ -403,43 +350,49 @@ public class Main {
                         case 1:
                             // Display all books
                             bookBuddy.displayBooks();
+                            ui.waitForEnter();
                             break;
 
                         case 2:
                             // Add new book
-                            bookBuddy.addNewBook(scanner);
+                            bookBuddy.addNewBook(ui.getScanner());
+                            ui.waitForEnter();
                             break;
 
                         case 3:
                             // Update book details
-                            bookBuddy.updateBookDetails(scanner);
+                            bookBuddy.updateBookDetails(ui.getScanner());
+                            ui.waitForEnter();
                             break;
 
                         case 4:
                             // Remove book
-                            bookBuddy.removeBook(scanner);
+                            bookBuddy.removeBook(ui.getScanner());
+                            ui.waitForEnter();
                             break;
 
                         case 5:
                             // View all orders as admin
-                            orderBuddy.viewAllOrdersAsAdmin(scanner);
+                            orderBuddy.viewAllOrdersAsAdmin(ui.getScanner());
+                            ui.waitForEnter();
                             break;
 
                         case 6:
                             // Logout
                             loggedInUser = null;
-                            System.out.println("Logged out successfully.");
+                            ui.printSuccess("Logged out successfully.");
+                            ui.waitForEnter();
                             break;
 
                         default:
-                            System.out.println("Invalid choice. Please enter your choice again!");
+                            ui.printError("Invalid choice. Please enter your choice again!");
+                            ui.waitForEnter();
                             break;
                     }
                 }
             }
         }
 
-        scanner.close();
-        System.out.println("Exiting ...");
+        ui.printSuccess("Exiting ...");
     }
 }
