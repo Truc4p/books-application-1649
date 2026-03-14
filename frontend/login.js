@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.getElementById("login-password") ? document.getElementById("login-password").value : "password"; // Fallback if no password field in UI
 
     try {
-      const response = await fetch("https://books-application-1649.onrender.com", {
+      const response = await fetch("https://books-application-1649.onrender.com/api/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
