@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const password = document.getElementById("login-password") ? document.getElementById("login-password").value : "password"; // Fallback if no password field in UI
 
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch("https://books-application-1649.onrender.com", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const adminKey = document.getElementById("reg-adminkey") ? document.getElementById("reg-adminkey").value : "";
     
     try {
-      const response = await fetch("/api/register", {
+      const response = await fetch("http://localhost:8080/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
