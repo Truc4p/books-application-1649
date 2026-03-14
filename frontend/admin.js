@@ -548,7 +548,7 @@ const updateCart = () => {
 
 async function fetchOrders() {
     try {
-        const response = await fetch(`http://localhost:8080/api/orders`);
+        const response = await fetch(`https://books-application-1649.onrender.com/api/orders`);
         if (response.ok) {
             const data = await response.json(); data.forEach(o => o.total = o.items.reduce((s, i) => s + i.price * i.quantity, 0)); state.orders = data;
             renderOrders();
@@ -704,7 +704,7 @@ const hookEvents = () => {
 
     // Send the new book to the backend
     try {
-      fetch('http://localhost:8080/api/books', {
+      fetch('https://books-application-1649.onrender.com/api/books', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newBook)
@@ -756,7 +756,7 @@ const hookEvents = () => {
 
     // Send update to Java server
     try {
-      await fetch('http://localhost:8080/api/books', {
+      await fetch('https://books-application-1649.onrender.com/api/books', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(targetBook)
@@ -830,7 +830,7 @@ const hookEvents = () => {
 
     // Send delete to Java server
     try {
-      fetch('http://localhost:8080/api/books?id=' + bookId, {
+      fetch('https://books-application-1649.onrender.com/api/books?id=' + bookId, {
         method: 'DELETE'
       }).catch(err => {
         console.warn("Could not save to backend. Change is only local.", err);
@@ -916,7 +916,7 @@ const init = async () => {
 
   try {
     // Fetch from Java WebServer
-    const response = await fetch('http://localhost:8080/api/books');
+    const response = await fetch('https://books-application-1649.onrender.com/api/books');
     if (response.ok) {
       const dbBooks = await response.json();
       if (dbBooks && dbBooks.length > 0) {

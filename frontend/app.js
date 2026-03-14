@@ -731,7 +731,7 @@ const hookEvents = () => {
 
     // Send update to Java server
     try {
-      await fetch('http://localhost:8080/api/books', {
+      await fetch('https://books-application-1649.onrender.com/api/books', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(targetBook)
@@ -848,7 +848,7 @@ const hookEvents = () => {
     };
 
     try {
-        const response = await fetch('http://localhost:8080/api/orders', {
+        const response = await fetch('https://books-application-1649.onrender.com/api/orders', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(orderData)
@@ -880,7 +880,7 @@ const hookEvents = () => {
 
 async function fetchOrders() {
     try {
-        const response = await fetch('http://localhost:8080/api/orders');
+        const response = await fetch('https://books-application-1649.onrender.com/api/orders');
         if (response.ok) {
             const data = await response.json();
             const user = JSON.parse(localStorage.getItem("currentUser") || '{}');
@@ -899,7 +899,7 @@ const init = async () => {
 
   try {
     // Fetch from Java WebServer
-    const response = await fetch('http://localhost:8080/api/books');
+    const response = await fetch('https://books-application-1649.onrender.com/api/books');
     if (response.ok) {
       const dbBooks = await response.json();
       if (dbBooks && dbBooks.length > 0) {

@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const adminKey = document.getElementById("reg-adminkey") ? document.getElementById("reg-adminkey").value : "";
     
     try {
-      const response = await fetch("http://localhost:8080/api/register", {
+      const response = await fetch("https://books-application-1649.onrender.com/api/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
