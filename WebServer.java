@@ -31,8 +31,10 @@ public class WebServer {
     public static OrderBuddy orderBuddy = new OrderBuddy(bookBuddy, customerBuddy);
 
     public static void main(String[] args) throws IOException {
-        // Create an HTTP server on port 8080
-        HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
+        // Create an HTTP server on port specified by environment variable or 8080
+        String portEnv = System.getenv("PORT");
+        int port = portEnv != null ? Integer.parseInt(portEnv) : 8080;
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
         // Define the /api/books endpoint
         server.createContext("/api/books", new BooksHandler());
@@ -44,7 +46,7 @@ public class WebServer {
         server.createContext("/", new StaticFileHandler());
 
         server.setExecutor(null); // Default executor
-        System.out.println("Backend Server is running on http://localhost:8080");
+        System.out.println("Backend Server is running on port " + port);
         server.start();
     }
 
