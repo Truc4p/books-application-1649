@@ -388,7 +388,7 @@ const renderCategories = () => {
 };
 
 const getFilteredBooks = () => {
-  const query = (elements.searchInput.value || "").trim().toLowerCase();
+  const query = elements.searchInput.value.trim().toLowerCase();
   let filtered = state.books.filter((book) => {
     const matchesCategory = activeCategory === "All" || book.category === activeCategory;
     const matchesQuery =
@@ -546,6 +546,18 @@ const updateCart = () => {
     .join("");
 };
 
+async function fetchOrders() {
+    try {
+        const response = await fetch(`http://localhost:8080/api/orders`);
+        if (response.ok) {
+            const data = await response.json(); data.forEach(o => o.total = o.items.reduce((s, i) => s + i.price * i.quantity, 0)); state.orders = data;
+            renderOrders();
+        }
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+    }
+}
+
 const renderOrders = () => {
   const ordersList = document.getElementById("orders-list");
   if (!ordersList) {
@@ -690,6 +702,19 @@ const hookEvents = () => {
       cover: coverSource
     };
 
+    // Send the new book to the backend
+    try {
+      fetch('http://localhost:8080/api/books', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newBook)
+      }).catch(err => {
+        console.warn("Could not save to backend. Change is only local.", err);
+      });
+    } catch (err) {
+      console.warn("Could not save to backend. Change is only local.", err);
+    }
+
     state.books.unshift(newBook);
     addBookForm.reset();
     addBookModal.classList.remove("is-open");
@@ -803,6 +828,17 @@ const hookEvents = () => {
       return;
     }
 
+    // Send delete to Java server
+    try {
+      fetch('http://localhost:8080/api/books?id=' + bookId, {
+        method: 'DELETE'
+      }).catch(err => {
+        console.warn("Could not save to backend. Change is only local.", err);
+      });
+    } catch (err) {
+      console.warn("Could not save to backend. Change is only local.", err);
+    }
+
     state.books = state.books.filter((item) => item.id !== bookId);
     state.cart = state.cart.filter((item) => item.id !== bookId);
     renderCategories();
@@ -835,37 +871,33 @@ const hookEvents = () => {
     renderBooks();
   });
 
-  safeAddEventListener("checkout", "click", async () => {
+  safeAddEventListener("checkout", "click", () => {
     if (state.cart.length === 0) {
       alert("Your cart is empty.");
       return;
     }
-    const user = JSON.parse(localStorage.getItem("currentUser") || '{}');
-    const orderData = {
-        email: user.email || "guest@example.com",
-        items: state.cart.map(item => ({bookId: parseInt(item.id), quantity: parseInt(item.quantity)})),
-        total: state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-    };
+    const orderTotal = state.cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const orderId = state.orders.length + 1;
+    const orderDate = new Date().toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric"
+    });
+    state.orders.unshift({
+      id: orderId,
+      date: orderDate,
+      items: state.cart.map((item) => ({
+        title: item.title,
+        quantity: item.quantity,
+        price: item.price
+      })),
+      total: orderTotal
+    });
 
-    try {
-        const response = await fetch('http://localhost:8080/api/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(orderData)
-        });
-        if (response.ok) {
-            state.cart = [];
-            if(typeof updateCart === 'function') updateCart();
-            if(elements.cartDrawer) elements.cartDrawer.classList.remove("is-open");
-            alert("Order placed! Check Orders history to view details.");
-            if(typeof fetchOrders === 'function') fetchOrders();
-        } else {
-            alert('Checkout failed on server');
-        }
-    } catch(e) {
-        console.error(e);
-        alert('Checkout failed');
-    }
+    alert("Order placed! Check Orders history to view details.");
+    state.cart = [];
+    updateCart();
+    elements.cartDrawer.classList.remove("is-open");
   });
 
   document.querySelectorAll(".tab").forEach((tab) => {
@@ -878,24 +910,9 @@ const hookEvents = () => {
   });
 };
 
-async function fetchOrders() {
-    try {
-        const response = await fetch('http://localhost:8080/api/orders');
-        if (response.ok) {
-            const data = await response.json();
-            const user = JSON.parse(localStorage.getItem("currentUser") || '{}');
-            state.orders = data.filter(o => o.email === user.email).map(o => ({...o, total: o.items.reduce((s,i) => s + i.price * i.quantity, 0)}));
-            renderOrders();
-        }
-    } catch (error) {
-        console.error('Error fetching orders:', error);
-    }
-}
-
 const init = async () => {
-  fetchOrders();
-  state.view = "customer";
-  setView("customer");
+  state.view = "admin";
+  setView("admin");
 
   try {
     // Fetch from Java WebServer

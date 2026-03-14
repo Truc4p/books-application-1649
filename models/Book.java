@@ -7,14 +7,23 @@ public class Book implements Comparable<Book> {
     private String author; // Author of the book
     private double price; // Price of the book
     private int stockQuantity; // Quantity of the book in stock
+    private String category; // Category of the book
+    private String cover; // Cover image URL
 
     // Constructor to initialize the book object
-    public Book(int bookId, String title, String author, double price, int stockQuantity) {
+    public Book(int bookId, String title, String author, double price, int stockQuantity, String category, String cover) {
         this.bookId = bookId;
         this.title = title;
         this.author = author;
         this.price = price;
         this.stockQuantity = stockQuantity;
+        this.category = category;
+        this.cover = cover;
+    }
+
+    // Overloaded Constructor for backward compatibility in your console app
+    public Book(int bookId, String title, String author, double price, int stockQuantity) {
+        this(bookId, title, author, price, stockQuantity, "Uncategorized", "images/default-cover.png");
     }
 
     // Getter method for bookId
@@ -60,6 +69,22 @@ public class Book implements Comparable<Book> {
     // Setter method for stockQuantity
     public void setStockQuantity(int stockQuantity) {
         this.stockQuantity = stockQuantity;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getCover() {
+        return cover;
+    }
+
+    public void setCover(String cover) {
+        this.cover = cover;
     }
 
     // Override compareTo method to compare books by bookId

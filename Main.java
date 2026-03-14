@@ -29,9 +29,9 @@ public class Main {
 
         BookBuddy bookBuddy = new BookBuddy();
         CartItemBuddy cartItemBuddy = new CartItemBuddy();
-        OrderBuddy orderBuddy = new OrderBuddy();
         AdminBuddy adminBuddy = new AdminBuddy();
         CustomerBuddy customerBuddy = new CustomerBuddy();
+        OrderBuddy orderBuddy = new OrderBuddy(bookBuddy, customerBuddy);
         StackADT<String> searchHistory = new StackADT<>(); // Stack to store search queries
         boolean running = true;
         User loggedInUser = null;

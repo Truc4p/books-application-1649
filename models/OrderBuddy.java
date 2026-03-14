@@ -5,17 +5,115 @@ import java.util.Date;
 import java.util.Scanner;
 import BooksApplication.adt.ArrayListADT;
 import BooksApplication.customer.Customer;
+import BooksApplication.customer.CustomerBuddy;
 import BooksApplication.adt.QueueADT;
 import BooksApplication.algo.LinearSearch;
 import BooksApplication.algo.BinarySearch;
 import BooksApplication.algo.QuickSort;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class OrderBuddy {
     private ArrayListADT<Order> orders; // List to store order objects
+    private BookBuddy bookBuddy;
+    private CustomerBuddy customerBuddy;
+    private static final String CSV_FILE = "data/orders.csv";
 
     // Constructor to initialize the orders list
-    public OrderBuddy() {
+    public OrderBuddy(BookBuddy bookBuddy, CustomerBuddy customerBuddy) {
+        this.bookBuddy = bookBuddy;
+        this.customerBuddy = customerBuddy;
         orders = new ArrayListADT<>();
+        loadOrders();
+    }
+
+    private void loadOrders() {
+        File file = new File(CSV_FILE);
+        if (!file.exists()) return;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                if (values.length >= 5) {
+                    try {
+                        int orderId = Integer.parseInt(values[0]);
+                        long timestamp = Long.parseLong(values[1]);
+                        String email = values[2];
+                        String status = values[3];
+                        String itemsStr = values[4];
+
+                        Customer customer = customerBuddy.getCustomerByEmail(email);
+                        if (customer == null) {
+                            // If customer was deleted but order remains, we could mock one or skip. 
+                            // For simplicity, skip if no customer found.
+                            continue;
+                        }
+
+                        ArrayListADT<CartItem> itemsList = new ArrayListADT<>();
+                        if (!itemsStr.isEmpty() && !itemsStr.equals("empty")) {
+                            String[] itemPairs = itemsStr.split(";");
+                            for (String pair : itemPairs) {
+                                String[] parts = pair.split(":");
+                                if (parts.length == 2) {
+                                    int bId = Integer.parseInt(parts[0]);
+                                    int qty = Integer.parseInt(parts[1]);
+                                    Book b = bookBuddy.getBookById(bId);
+                                    if (b != null) {
+                                        itemsList.add(new CartItem(b, qty));
+                                    }
+                                }
+                            }
+                        }
+
+                        Date date = new Date(timestamp);
+                        orders.add(new Order(orderId, date, customer, status, itemsList));
+                    } catch (Exception e) {
+                        System.err.println("Skipped malformed order line.");
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error loading orders: " + e.getMessage());
+        }
+    }
+
+    private void saveOrders() {
+        File dir = new File("data");
+        if (!dir.exists()) dir.mkdirs();
+
+        try (PrintWriter pw = new PrintWriter(new FileWriter(CSV_FILE))) {
+            for (int i = 0; i < orders.size(); i++) {
+                Order o = orders.get(i);
+                
+                // Format items array to bookId:qty;bookId:qty
+                StringBuilder itemsStr = new StringBuilder();
+                ArrayListADT<CartItem> itemsList = o.getItems();
+                for (int j = 0; j < itemsList.size(); j++) {
+                    CartItem ci = itemsList.get(j);
+                    itemsStr.append(ci.getBookId()).append(":").append(ci.getQuantity());
+                    if (j < itemsList.size() - 1) {
+                        itemsStr.append(";");
+                    }
+                }
+                if (itemsStr.length() == 0) {
+                    itemsStr.append("empty");
+                }
+
+                pw.println(o.getOrderId() + "," + 
+                           o.getDate().getTime() + "," + 
+                           o.getCustomer().getEmail() + "," + 
+                           o.getStatus() + "," + 
+                           itemsStr.toString());
+            }
+        } catch (IOException e) {
+            System.err.println("Error saving orders: " + e.getMessage());
+        }
     }
 
     // Method to create a new order
@@ -28,6 +126,7 @@ public class OrderBuddy {
     // Method to add an order to the list
     public void addOrder(Order order) {
         orders.add(order);
+        saveOrders();
     }
 
     // Method to get all orders as a queue
@@ -218,6 +317,7 @@ public class OrderBuddy {
                 System.out.print("Enter the new status for the order: ");
                 String newStatus = scanner.nextLine();
                 foundOrder.setStatus(newStatus);
+                saveOrders(); // Save after status update
                 System.out.println("Order status updated successfully!");
             } else {
                 System.out.println("No orders found matching: " + searchOrderQuery);

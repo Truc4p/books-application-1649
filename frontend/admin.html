@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Leaf & Lumen Books</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@300;500;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark">LL</div>
+          <div>
+            <div class="brand-title">Leaf & Lumen</div>
+            <div class="brand-subtitle">Books curated for calm minds</div>
+          </div>
+        </div>
+        <nav class="topbar-nav">
+          <a href="admin.html" class="chip is-active" style="text-decoration:none;">Admin</a>
+          <a href="login.html" id="account-link" class="chip" style="text-decoration:none;">Account</a>
+          <button class="primary" id="open-cart" style="display:none;">Cart <span id="cart-count">0</span></button>
+        </nav>
+      </header>
+
+      <main class="main">
+        <section class="admin is-active" id="admin-view" style="display:block;">
+          <div class="admin-header">
+            <div>
+              <p class="eyebrow">Admin workspace</p>
+              <h2>Manage inventory</h2>
+            </div>
+            <button class="primary" id="add-book">Add new book</button>
+          </div>
+          <div class="admin-table" id="admin-table"></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal" id="auth-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Welcome back</h3>
+          <button class="ghost" id="close-auth">Close</button>
+        </div>
+        <div class="tabs">
+          <button class="tab is-active" data-tab="login">Login</button>
+          <button class="tab" data-tab="register">Register</button>
+        </div>
+        <form class="form" id="login-form">
+          <label>Email</label>
+          <input type="email" placeholder="name@email.com" required />
+          <label>Password</label>
+          <input type="password" placeholder="••••••" required />
+          <button class="primary" type="submit">Login</button>
+        </form>
+        <form class="form is-hidden" id="register-form">
+          <label>Name</label>
+          <input type="text" placeholder="Your name" required />
+          <label>Email</label>
+          <input type="email" placeholder="name@email.com" required />
+          <label>Password</label>
+          <input type="password" placeholder="Create a password" required />
+          <label>Address</label>
+          <input type="text" placeholder="Street, City" required />
+          <button class="primary" type="submit">Create account</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="add-book-modal">
+      <div class="modal-content modal-wide">
+        <div class="modal-header">
+          <h3>Add new book</h3>
+          <button class="ghost" id="close-add-book">Close</button>
+        </div>
+        <form class="form admin-form" id="add-book-form">
+          <div class="form-row">
+            <div>
+              <label>Title</label>
+              <input type="text" name="title" placeholder="Book title" required />
+            </div>
+            <div>
+              <label>Author</label>
+              <input type="text" name="author" placeholder="Author name" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Category</label>
+              <input type="text" name="category" placeholder="Fiction, Memoir" required />
+            </div>
+            <div>
+              <label>Price</label>
+              <input type="number" name="price" min="0" step="0.01" placeholder="19.99" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Stock</label>
+              <input type="number" name="stock" min="0" step="1" placeholder="10" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Cover image URL</label>
+              <input type="url" name="coverUrl" placeholder="https://..." />
+            </div>
+            <div>
+              <label>Upload cover</label>
+              <input type="file" name="coverFile" accept="image/*" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="ghost" type="button" id="cancel-add-book">Cancel</button>
+            <button class="primary" type="submit">Add book</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="edit-book-modal">
+      <div class="modal-content modal-wide">
+        <div class="modal-header">
+          <h3>Edit book</h3>
+          <button class="ghost" id="close-edit-book">Close</button>
+        </div>
+        <form class="form admin-form" id="edit-book-form">
+          <input type="hidden" name="id" />
+          <div class="form-row">
+            <div>
+              <label>Title</label>
+              <input type="text" name="title" placeholder="Book title" required />
+            </div>
+            <div>
+              <label>Author</label>
+              <input type="text" name="author" placeholder="Author name" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Category</label>
+              <input type="text" name="category" placeholder="Fiction, Memoir" required />
+            </div>
+            <div>
+              <label>Price</label>
+              <input type="number" name="price" min="0" step="0.01" placeholder="19.99" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Stock</label>
+              <input type="number" name="stock" min="0" step="1" placeholder="10" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div>
+              <label>Cover image URL</label>
+              <input type="url" name="coverUrl" placeholder="https://..." />
+            </div>
+            <div>
+              <label>Upload new cover (optional)</label>
+              <input type="file" name="coverFile" accept="image/*" />
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="ghost" type="button" id="cancel-edit-book">Cancel</button>
+            <button class="primary" type="submit">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="book-details-modal">
+      <div class="modal-content modal-wide">
+        <div class="modal-header">
+          <h3>Book Details</h3>
+          <button class="ghost" id="close-book-details">Close</button>
+        </div>
+        <div class="book-details-body" id="book-details-content">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <script src="admin.js"></script>
+  
+    <script>
+      (function() {
+         const userStr = localStorage.getItem("currentUser");
+         if (userStr) {
+           const accLink = document.getElementById("account-link");
+           if (accLink) {
+             accLink.href = "profile.html";
+           }
+         } else {
+             // Not logged in? If they are on admin.html and not logged in, force redirect to login
+             if(window.location.pathname.includes("admin.html")) {
+                window.location.href = "login.html";
+             }
+         }
+      })();
+    </script>
+  </body>
+</html>
